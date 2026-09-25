@@ -23,14 +23,25 @@ plain text                         editions                in both columns, note
 
 ## Install
 
-```bash
-uv tool install git+https://github.com/sfgartland/textcollate      # or: git clone ...; cd textcollate; uv sync
-textcollate doctor            # checks pdftotext, tesseract, lualatex ...
-textcollate fetch-tessdata deu   # OCR language data without sudo (~/.local/share/tessdata)
+**In Claude Code** (skills for comparing editions, page-marked LaTeX and parallel translations):
+
+```
+/plugin marketplace add sfgartland/textcollate
+/plugin install textcollate@textcollate
 ```
 
-Needs poppler (`pdftotext`, `pdfimages`, `pdftoppm`), tesseract (only for scans), a TeX engine (`lualatex`) and, for some
-scan options, ImageMagick.
+**The command line tool** (needs [uv](https://docs.astral.sh/uv/)):
+
+```bash
+uv tool install git+https://github.com/sfgartland/textcollate       # permanent, puts `textcollate` on PATH
+uvx --from git+https://github.com/sfgartland/textcollate textcollate --help   # or run it once without installing
+textcollate doctor                # checks pdftotext, tesseract, lualatex ...
+textcollate fetch-tessdata deu    # OCR language data without sudo (~/.local/share/tessdata)
+```
+
+From a checkout: `git clone https://github.com/sfgartland/textcollate && cd textcollate && uv sync`.
+Needs poppler (`pdftotext`, `pdfimages`, `pdftoppm`), tesseract (only for scans), a TeX engine (`lualatex`) and, for some scan
+options, ImageMagick. MIT licensed.
 
 ## Quick start
 
