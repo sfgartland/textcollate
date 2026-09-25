@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+# Launcher shipped with the textcollate plugin, so the skills can simply run `textcollate ...`.
+# Order: a real `textcollate` on PATH (uv tool install), $TEXTCOLLATE_HOME (a checkout), then straight from GitHub via uvx.
+self_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+IFS=: read -ra dirs <<<"$PATH"
+for d in "${dirs[@]}"; do
+  [ "$d" = "$self_dir" ] && continue
+  [ -x "$d/textcollate" ] && exec "$d/textcollate" "$@"
+done
+if [ -n "${TEXTCOLLATE_HOME:-}" ] && command -v uv >/dev/null 2>&1; then
+  exec uv run --project "$TEXTCOLLATE_HOME" textcollate "$@"
+fi
+if command -v uvx >/dev/null 2>&1; then
+  exec uvx --from "git+https://github.com/sfgartland/textcollate" textcollate "$@"
+fi
+echo "textcollate: install uv (https://docs.astral.sh/uv/) or run: uv tool install git+https://github.com/sfgartland/textcollate" >&2
+exit 127

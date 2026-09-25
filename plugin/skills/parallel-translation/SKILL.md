@@ -5,8 +5,8 @@ description: Use when the user wants a side-by-side (dual column, parallel, bili
 
 # Parallel text with page mapping
 
-CLI: `textcollate` (else `uv run --project ${TEXTCOLLATE_HOME:-~/programing_linux/textcollate} textcollate`). Reference project:
-`~/programing_linux/textcollate/examples/gelassenheit/` (German left, English right, GA 16 pages in both).
+CLI: `textcollate` (the plugin's `bin/` launcher puts it on PATH; it uses an installed copy, `$TEXTCOLLATE_HOME`, or fetches it from GitHub with `uvx` -- needs only `uv`; poppler, tesseract and a TeX engine are checked by `textcollate doctor`). Reference project:
+`examples/gelassenheit/` in the repository (German left, English right, GA 16 pages in both).
 
 ## Procedure
 

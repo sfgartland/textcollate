@@ -24,9 +24,7 @@ plain text                         editions                in both columns, note
 ## Install
 
 ```bash
-cd ~/programing_linux/textcollate
-uv sync                       # no third-party runtime dependencies
-uv tool install --editable .  # optional: puts `textcollate` on PATH
+uv tool install git+https://github.com/sfgartland/textcollate      # or: git clone ...; cd textcollate; uv sync
 textcollate doctor            # checks pdftotext, tesseract, lualatex ...
 textcollate fetch-tessdata deu   # OCR language data without sudo (~/.local/share/tessdata)
 ```
@@ -91,14 +89,14 @@ See [docs/config.md](docs/config.md) (every option), [docs/workflows.md](docs/wo
 
 ## Claude Code plugin
 
-`plugin/` packages the workflows as skills (compare editions, page-marked LaTeX, parallel translation). Install:
+`plugin/` packages the workflows as skills (compare editions, page-marked LaTeX, parallel translation). Install from GitHub:
 
-```bash
-claude plugin marketplace add ~/programing_linux/textcollate
-claude plugin install textcollate@textcollate
+```
+/plugin marketplace add sfgartland/textcollate
+/plugin install textcollate@textcollate
 ```
 
-The skills call `textcollate` (on PATH after `uv tool install`, or `uv run --project $TEXTCOLLATE_HOME textcollate`).
+The plugin's `bin/textcollate` launcher runs an installed CLI if present and otherwise fetches it with `uvx` (only `uv` is needed).
 
 ## Development
 

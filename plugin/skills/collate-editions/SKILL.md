@@ -5,8 +5,9 @@ description: Use when the user has several versions of the same text (scans, PDF
 
 # Compare editions of a text
 
-Uses the `textcollate` project (`~/programing_linux/textcollate`; docs in its `docs/`). Run the CLI as `textcollate ...`; if that is
-not on PATH: `uv run --project ${TEXTCOLLATE_HOME:-~/programing_linux/textcollate} textcollate ...`.
+Uses the `textcollate` CLI (source and docs: https://github.com/sfgartland/textcollate). Run it as `textcollate ...`: the plugin's `bin/`
+launcher puts it on PATH and falls back to `uvx --from git+https://github.com/sfgartland/textcollate textcollate ...` (needs only `uv`).
+Run `textcollate doctor` first: it checks poppler, tesseract, a TeX engine and OCR language data.
 
 ## Procedure
 
@@ -15,7 +16,7 @@ not on PATH: `uv run --project ${TEXTCOLLATE_HOME:-~/programing_linux/textcollat
    blank)? `pdfimages -list` shows pages without an image. Report what you found before building anything.
 2. **Never modify originals.** Work in a project directory (`textcollate init DIR`); outputs go to `build/`.
 3. **Write `textcollate.toml`**: one `[[edition]]` per version (source type `pdf-text`, `pdf-ocr`, `html-pages`, `text`),
-   its own page labels (`[edition.pages]`). Copy from `~/programing_linux/textcollate/examples/gelassenheit/textcollate.toml`.
+   its own page labels (`[edition.pages]`). Copy from the example projects in the repository (`examples/gelassenheit/`, `examples/resem-phen/`).
    For scans, `textcollate doctor --lang deu` and `textcollate fetch-tessdata deu` if the language data is missing.
 4. `textcollate extract` -- read the summary (paragraph count, own page labels first..last). A wrong count is a layout
    problem: tune `[edition.layout]` (`paragraphs`, `indent_frac`, `furniture`, `notes`).

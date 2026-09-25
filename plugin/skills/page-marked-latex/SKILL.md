@@ -5,8 +5,8 @@ description: Use when the user wants a clean LaTeX (or typeset PDF) version of a
 
 # Clean LaTeX with original pagination
 
-CLI: `textcollate` (else `uv run --project ${TEXTCOLLATE_HOME:-~/programing_linux/textcollate} textcollate`). Reference project:
-`~/programing_linux/textcollate/examples/gelassenheit/` (German text, Neske pages + GA 16 pages).
+CLI: `textcollate` (the plugin's `bin/` launcher puts it on PATH; it uses an installed copy, `$TEXTCOLLATE_HOME`, or fetches it from GitHub with `uvx` -- needs only `uv`; poppler, tesseract and a TeX engine are checked by `textcollate doctor`). Reference project:
+`examples/gelassenheit/` in the repository (German text, Neske pages + GA 16 pages).
 
 ## Procedure
 
