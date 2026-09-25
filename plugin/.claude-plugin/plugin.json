@@ -1,0 +1,7 @@
+{
+  "name": "textcollate",
+  "description": "Compare editions of a text, typeset clean LaTeX with the original page references, and build side-by-side translations",
+  "version": "0.1.0",
+  "author": { "name": "Severin Gartland" },
+  "keywords": ["latex", "ocr", "editions", "translation", "pagination"]
+}

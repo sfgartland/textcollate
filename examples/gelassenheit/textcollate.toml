@@ -1,0 +1,543 @@
+# Heidegger, "Gelassenheit" (Memorial Address, 1955) -- German (Neske 1960) beside English (Discourse on Thinking),
+# with the page breaks of the Gesamtausgabe vol. 16 (Klostermann 2000, pp. 517-529) in both.
+#
+#   ./link_sources.sh        # symlink the source files into ./sources
+#   uv run textcollate doctor -c .
+#   uv run textcollate build -c .            # -> build/out/de-clean.pdf, build/out/de-en.pdf
+
+[project]
+name = "gelassenheit"
+title = "Gelassenheit"
+author = "Martin Heidegger"
+
+[latex]
+font = "TeX Gyre Pagella"
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The reference for GA 16 page breaks: beyng.com publishes pp. 517-520 and 523-525 as text (born digital, trust 1.0);
+# the missing pages 521, 522, 527, 529 are OCR'd from the image-only scan of the volume (its pages 526 and 528 are blank
+# "hidden page" placeholders there -- those two breaks are declared with mark_at on the Neske edition below).
+[[edition]]
+id = "ga16"
+label = "GA 16"
+language = "de"
+
+[[edition.part]]
+type = "html-pages"
+pattern = "sources/beyng-html/GA16.{page}.html"
+pages = "517-520,523-525"
+body = '<div class="gastyle">(.*?)</div>'
+drop = ['^\d{3}$', '^224\.', '^\(30\. Oktober']
+trust = 1.0
+
+[[edition.part]]
+type = "pdf-ocr"
+path = "sources/ga16-original-scan.pdf"
+pages = [545, 546, 551, 553]           # book pp. 521, 522, 527, 529 = PDF page - 24
+labels = { list = [521, 522, 527, 529] }
+images = "native"                      # the scan is 575 px wide: upscale before OCR
+scale = 300
+lang = "deu"
+psm = 4
+trust = 0.5
+
+[edition.layout]
+paragraphs = "indent"
+indent_frac = 0.03
+[edition.clean]
+abbrev = ["d. h.", "z. B."]
+[edition.mark_style]                   # how GA 16 page breaks look in the output
+label = "GA 16"
+color = "8B1E1E"
+bold = true
+margin = "left"
+
+# A second, independent OCR of the same typesetting: Hannah Arendt's copy of Neske 1959 (Bard College scan), which shows
+# only selected pages: pp. 15-17 (single pages) and pp. 22-27 (three double-page spreads).  Used only to repair OCR slips,
+# above all on GA 16 pp. 526/528 that the GA 16 scan lacks.
+[[edition]]
+id = "arendt"
+label = "Neske 1959 (Arendt copy)"
+language = "de"
+
+[[edition.part]]
+type = "pdf-ocr"
+path = "sources/arendt-neske1959.pdf"
+pages = "6-8"
+labels = { list = [15, 16, 17] }
+lang = "deu"
+images = "native"
+scale = 200
+trust = 0.5
+
+[[edition.part]]
+type = "pdf-ocr"
+path = "sources/arendt-neske1959.pdf"
+pages = "9-11"
+labels = { list = [22, 23, 24, 25, 26, 27] }
+split = 2
+lang = "deu"
+images = "native"
+scale = 200
+trust = 0.5
+
+[edition.layout]
+paragraphs = "indent"
+indent_frac = 0.03
+drop_tokens = ['^[A-Za-zÄÖÜ]$']
+
+# ---------------------------------------------------------------------------------------------------------------------
+# The text we typeset: Neske 1960 (2nd, unchanged printing), pp. 11-28.  Text layer of the Internet Archive scan.
+[[edition]]
+id = "neske60"
+label = "Neske 1960"
+language = "de"
+title = "Gelassenheit"
+
+[edition.source]
+type = "pdf-text"
+path = "sources/neske1960.pdf"
+pages = "13-30"
+[edition.pages]
+first = 11                             # PDF page 13 is printed page 11
+[edition.layout]
+paragraphs = "shortline"
+quote_frac = [0.04, 0.10]
+drop_tokens = ['^[A-Za-zÄÖÜ]$']          # stray single letters from the OCR
+[edition.clean]
+abbrev = ["d. h.", "z. B."]
+[edition.mark_style]
+label = "Neske 1960"
+color = "808080"
+margin = "right"
+
+# GA 16 pp. 526 and 528 are blank in the scan: declare where they begin (words checked against Neske pp. 23 and 27)
+[[edition.mark_at]]
+edition = "ga16"
+label = 526
+before = "Denken wach, dann muß"
+[[edition.mark_at]]
+edition = "ga16"
+label = 528
+before = "überall in der technischen Welt ein verborgener"
+
+# emphasis is lost by the text layer: the passages that are italic in the print
+[[edition.italic]]
+context = "Meisters im Werk ist"
+phrase = "im Werk"
+[[edition.italic]]
+context = "daß wir denken. Allein"
+phrase = "denken"
+[[edition.italic]]
+context = "Wasserstoffbomben nicht explodieren"
+phrase = "nicht"
+[[edition.italic]]
+context = "Die Bodenständigkeit des heutigen"
+phrase = "Bodenständigkeit"
+[[edition.italic]]
+context = "Denken als das einzige in Geltung"
+phrase = "als das einzige"
+[[edition.italic]]
+context = "nennen: die Gelassenheit zu den Dingen."
+phrase = "die Gelassenheit zu den Dingen."
+[[edition.italic]]
+context = "halten: die Offenheit für das Geheimnis."
+phrase = "die Offenheit für das Geheimnis."
+[[edition.italic]]
+context = "Der Sinn der technischen Welt verbirgt sich."
+phrase = "Der Sinn der technischen Welt verbirgt sich."
+[[edition.italic]]
+context = "Und wir sind es"
+phrase = "wir"
+
+[edition.bib]
+type = "book"
+author = "Heidegger, Martin"
+title = "Gelassenheit"
+edition = "2., unveränderte Auflage"
+publisher = "Neske"
+location = "Pfullingen"
+date = "1960"
+origdate = "1959"
+langid = "german"
+
+# ---------------------------------------------------------------------------------------------------------------------
+# English: Discourse on Thinking (Anderson & Freund 1966), the "Memorial Address" pp. 43-57.  The PDF's own text layer is
+# scrambled, so OCR the 1-bit text masks of the scan (images = "smask") with tesseract.
+[[edition]]
+id = "dot"
+label = "Discourse on Thinking"
+language = "en"
+
+[edition.source]
+type = "pdf-ocr"
+path = "sources/memorial-address.pdf"
+pages = "1-15"
+images = "smask"
+lang = "eng"
+psm = 4
+[edition.pages]
+first = 43
+[edition.layout]
+paragraphs = "indent"
+indent_frac = 0.035
+furniture = ['[\d.]{0,6}\s*DISCOURSE ON THINKING', 'MEMORIAL ADDRESS\s*\d+']
+title = ['MEMORIAL ADDRESS\*?']
+notes = { min_y = 2000, height_ratio = 0.85 }
+hyphens = { mode = "lexicon", wordlist = ["/usr/share/dict/words"], keep = ["thought-less", "thought-poor", "flight-from-thinking", "flight-from-thought", "warm-hearted", "life-giving"] }
+[edition.clean]
+replace = [["mina", "mind"], ["Schiihle", "Schühle"], ["Bodenstaéndigkeit", "Bodenständigkeit"], ["science |", "science]"], ["Con-radin", "Conradin"]]
+regex = [['(?<=\s)‘-?(?=[a-z])', '']]
+drop = ["®", "*"]
+[edition.mark_style]
+label = "DoT"
+color = "808080"
+
+# translator's notes: markers sit after these strings
+[[edition.note_marker]]
+key = "*"
+after = "MEMORIAL ADDRESS"
+[[edition.note_marker]]
+key = "1"
+after = "“Der Feldweg”"
+[[edition.note_marker]]
+key = "2"
+after = "Conradin Kreutzer."
+[[edition.note_marker]]
+key = "3"
+after = "at its core!"
+[[edition.note_marker]]
+key = "4"
+after = "old word, releasement toward things."
+[[edition.italic]]
+context = "the autochthony, of man"
+phrase = "autochthony"
+[[edition.italic]]
+context = "old word, releasement toward things."
+phrase = "releasement toward things."
+
+[edition.bib]
+type = "inbook"
+author = "Heidegger, Martin"
+bookauthor = "Heidegger, Martin"
+translator = "Anderson, John M. and Freund, E. Hans"
+title = "Memorial Address"
+booktitle = "Discourse on Thinking"
+origtitle = "Gelassenheit"
+publisher = "Harper \\& Row"
+location = "New York"
+date = "1966"
+pages = "43--57"
+langid = "english"
+
+# ---------------------------------------------------------------------------------------------------------------------
+[[output]]
+id = "de-clean"
+kind = "single"
+edition = "neske60"
+title = "Gelassenheit"
+marks = ["neske60", "ga16"]
+colophon = "Text: Neske, Pfullingen 1960 (2nd, unchanged printing), pp. 11-28, corrected against GA 16 (pp. 517-529). Grey: Neske pages (right margin); red: GA 16 pages (left margin)."
+[output.collate]
+refs = ["ga16", "arendt"]
+paragraph_starts = ["ga16"]
+marks_from = ["ga16"]
+
+[[output]]
+id = "de-en"
+kind = "parallel"
+left = "neske60"
+right = "dot"
+title = "Gelassenheit / Memorial Address"
+legend = "left: Neske 1960, pp. 11-28; right: Discourse on Thinking, pp. 43-57. Red |GA n| = page break of GA 16 (in the English carried over by sentence alignment; ≈ = approximate)."
+marks = ["neske60", "dot", "ga16"]
+transfer = ["ga16"]
+concordance = "ga16"
+[output.left_collate]
+refs = ["ga16", "arendt"]
+paragraph_starts = ["ga16"]
+marks_from = ["ga16"]
+
+[[output.anchor]]
+left = "erste Wort.*?Dankes"
+right = "first public word in my home town"
+
+[[output.anchor]]
+left = "Ich danke der Heimat"
+right = "I thank my homeland"
+
+[[output.anchor]]
+left = "Feldweg"
+right = "Der Feldweg"
+
+[[output.anchor]]
+left = "Sch[üu]hle"
+right = "Mayor Sch"
+
+[[output.anchor]]
+left = "Verehrte Festgemeinde"
+right = "Honored Guests"
+
+[[output.anchor]]
+left = "Gedenkfeier für unseren Landsmann"
+right = "commemoration of the composer"
+
+[[output.anchor]]
+left = "Gegenwart des Meisters"
+right = "master.s presence in the work"
+
+[[output.anchor]]
+left = "Spieler und Sänger"
+right = "musicians and singers"
+
+[[output.anchor]]
+left = "schon eine Gedenkfeier"
+right = "memorial celebration"
+
+[[output.anchor]]
+left = "Zeichnet sich die Musik"
+right = "distinction of music"
+
+[[output.anchor]]
+left = "Veranstalter eine"
+right = "has been put on the program"
+
+[[output.anchor]]
+left = "Lebensgeschichte"
+right = "life"
+
+[[output.anchor]]
+left = "Machen wir uns nichts vor"
+right = "Let us not fool"
+
+[[output.anchor]]
+left = "unheimlicher Gast"
+right = "uncanny visitor|uncanny guest"
+
+[[output.anchor]]
+left = "Autobahn"
+right = "road|highway|expressway"
+
+[[output.anchor]]
+left = "Flucht vor dem Denken"
+right = "flight from thinking"
+
+[[output.anchor]]
+left = "zu keiner Zeit"
+right = "never|no other time|at no time"
+
+[[output.anchor]]
+left = "rechnende Denken kalkuliert"
+right = "calculat"
+
+[[output.anchor]]
+left = "zwei Arten von Denken"
+right = "two kinds of thinking"
+
+[[output.anchor]]
+left = "zu .hoch"
+right = ".above. the reach"
+
+[[output.anchor]]
+left = "Landmann"
+right = "farmer|husbandman"
+
+[[output.anchor]]
+left = "Fleck Heimaterde"
+right = "patch of home ground|home ground"
+
+[[output.anchor]]
+left = "schwäbische Boden"
+right = "Swabian soil|Swabian"
+
+[[output.anchor]]
+left = "Ostpreußen"
+right = "East Prussia"
+
+[[output.anchor]]
+left = "Wir sind Pflanzen"
+right = "We are plants"
+
+[[output.anchor]]
+left = "Der Dichter will sagen"
+right = "The poet means|poet means|The poet wants"
+
+[[output.anchor]]
+left = "Wie steht es heute"
+right = "does this claim|how.*stand"
+
+[[output.anchor]]
+left = "Viele deutsche Menschen"
+right = "Many Germans"
+
+[[output.anchor]]
+left = "Fernsehfunk"
+right = "television"
+
+[[output.anchor]]
+left = "Ackerfeld rings um den Hof"
+right = "farm|field"
+
+[[output.anchor]]
+left = "Was geht hier vor"
+right = "What is happening"
+
+[[output.anchor]]
+left = "Zange der Planung"
+right = "clutches of planning|planning and calculation"
+
+[[output.anchor]]
+left = "Atombombe"
+right = "atomic bomb|atom bomb|bomb"
+
+[[output.anchor]]
+left = "friedliche"
+right = "peaceful"
+
+[[output.anchor]]
+left = "England"
+right = "England"
+
+[[output.anchor]]
+left = "Atomgesch[äa]ft"
+right = "atomic business|atomic|atom"
+
+[[output.anchor]]
+left = "achtzehn Nobelpreisträger"
+right = "eighteen Nobel"
+
+[[output.anchor]]
+left = "glücklicheren Leben"
+right = "happier|happiness"
+
+[[output.anchor]]
+left = "Umwälzung aller maßgebenden"
+right = "revolution in leading concepts|revolution"
+
+[[output.anchor]]
+left = "Tankstelle"
+right = "gasoline station|filling station|fueling station|station"
+
+[[output.anchor]]
+left = "17\\. Jahrhundert"
+right = "seventeenth century"
+
+[[output.anchor]]
+left = "Weltraum"
+right = "space|universe"
+
+[[output.anchor]]
+left = "Weltbedarf an Energie"
+right = "world.s demand for energy|demand for energy|energy"
+
+[[output.anchor]]
+left = "Bänd\\W?igung der Atomenergie|Bändigung"
+right = "tame and direct"
+
+[[output.anchor]]
+left = "Film- und Fernsehtechnik"
+right = "film and television"
+
+[[output.anchor]]
+left = "illustrierten Zeitung"
+right = "picture magazine"
+
+[[output.anchor]]
+left = "Stanley"
+right = "Stanley"
+
+[[output.anchor]]
+left = "Wasserstoffbomb"
+right = "hydrogen bomb"
+
+[[output.anchor]]
+left = "unheimliche Veränderung der Welt"
+right = "uncanny (transformation|change)"
+
+[[output.anchor]]
+left = "Kein einzelner Mensch"
+right = "No single man"
+
+[[output.anchor]]
+left = "wehrlos und ratlos"
+right = "defenseless and perplexed"
+
+[[output.anchor]]
+left = "das besinnliche Denken wach"
+right = "meditative thinking awake|meditative thinking is awakened|awaken"
+
+[[output.anchor]]
+left = "neuer Grund und Boden"
+right = "new ground and foundation|new ground|foundation"
+
+[[output.anchor]]
+left = "Weg zum Nahen"
+right = "way to what is near"
+
+[[output.anchor]]
+left = "Machen wir die Probe"
+right = "Let us give it a trial"
+
+[[output.anchor]]
+left = "Apparate und Maschinen"
+right = "the arrangements"
+
+[[output.anchor]]
+left = "Aber wir können auch Anderes"
+right = "Still we can act otherwise|we can act otherwise"
+
+[[output.anchor]]
+left = "gleichzeitig .ja. und .nein."
+right = "both yes and no|yes.{1,6}and at the same time.{1,6}no"
+
+[[output.anchor]]
+left = "Gelassenheit zu den Dingen"
+right = "releasement toward things"
+
+[[output.anchor]]
+left = "hellsichtig"
+right = "clear vision"
+
+[[output.anchor]]
+left = "Ernährungsindustrie"
+right = "food industry"
+
+[[output.anchor]]
+left = "verbirgt sich"
+right = "hides itself|hidden meaning"
+
+[[output.anchor]]
+left = "Offenheit für das Geheimnis"
+right = "openness to the mystery"
+
+[[output.anchor]]
+left = "dritter Weltkrieg"
+right = "third world war"
+
+[[output.anchor]]
+left = "weit größere Gefahr"
+right = "far greater danger|much greater danger|greater danger"
+
+[[output.anchor]]
+left = "totale Gedankenlosigkeit"
+right = "total|complete.*thoughtless|thoughtlessness"
+
+[[output.anchor]]
+left = "Nachdenken wach zu halten"
+right = "keep meditative thinking alive|keep.*alive|awake"
+
+[[output.anchor]]
+left = "herzhaften Denken"
+right = "heartfelt|courageous|continuous|unceasing|unremitting|thinking"
+
+[[output.anchor]]
+left = "Heuberger Heimat"
+right = "Heuberg"
+
+[[output.anchor]]
+left = "neue Wurzeln schlagen"
+right = "take root|new roots"
+
+[[output.anchor]]
+left = "Früchte tragen"
+right = "bear fruit|bear fruit"

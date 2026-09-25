@@ -1,0 +1,14 @@
+{
+  "name": "textcollate",
+  "description": "Collate editions of a text, carry original page references, typeset clean and parallel LaTeX",
+  "owner": {
+    "name": "Severin Gartland"
+  },
+  "plugins": [
+    {
+      "name": "textcollate",
+      "source": "./plugin",
+      "description": "Skills for comparing editions, page-marked LaTeX and side-by-side translations (drives the textcollate CLI)"
+    }
+  ]
+}
