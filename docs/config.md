@@ -48,6 +48,8 @@ explicit · nothing: the source page number.
 | `quote_frac` (`[0.04, 0.10]`) | indentation range of block quotations (must span several lines) |
 | `furniture` | regexes (full-line) for running heads etc.; digit-only lines at the page edge are dropped (`drop_folios`) |
 | `title` | regexes for title lines (split off into `edition.title`) |
+| `heading_ratio`, `heading_re` | headings as paragraphs of their own: lines set larger than the median line (`heading_ratio = 1.07`, several words) or starting like a heading (`heading_re = '^§\s*\d+\.'`; centred lines after it continue it) |
+| `running_heads` | like `furniture`, but only for lines in the top band of the page (a chapter title with the same words stays) |
 | `notes` | `{min_y = 2000}` or `{frac = 0.75}`, `height_ratio = 0.85`: small lines at the bottom are footnotes; `note_split` regex |
 | `drop_tokens` | regexes of stray tokens to delete (OCR debris, e.g. `['^[A-Z]$']`) |
 | `drop_paragraphs` | regexes of whole paragraphs to delete after reconstruction (their page marks move to the next paragraph) |

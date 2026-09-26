@@ -78,6 +78,7 @@ def split_page(page: PageData, L: dict):
     span = max(1.0, bottom - top)
     med_h = statistics.median(l.h for l in lines)
     furn = [re.compile(p) for p in L.get("furniture", [])]
+    heads = [re.compile(p) for p in L.get("running_heads", [])]      # like furniture, but only in the top band (chapter titles keep theirs)
     titles = [re.compile(p) for p in L.get("title", [])]
     ncfg = L.get("notes") or {}
     body, notes, title = [], [], []
@@ -100,7 +101,7 @@ def split_page(page: PageData, L: dict):
     for l in lines:
         t = l.text.strip()
         edge = l.y < top + 0.10 * span or l.y > bottom - 0.10 * span
-        if any(f.fullmatch(t) for f in furn) or (L.get("drop_folios", True) and re.fullmatch(r"\d{1,4}\.?", t) and edge):
+        if any(f.fullmatch(t) for f in furn) or (l.y < top + 0.035 * span and any(f.fullmatch(t) for f in heads)) or (L.get("drop_folios", True) and re.fullmatch(r"\d{1,4}\.?", t) and edge):
             continue
         if any(x.fullmatch(t) for x in titles):
             title.append(t)
@@ -145,7 +146,9 @@ def from_lines(pages: list[PageData], L: dict, edition: str, lex: Lexicon, margi
     drop_tokens = [re.compile(x) for x in L.get("drop_tokens", [])]        # OCR debris such as a stray "O"
     carry: str | None = None          # head of a word hyphenated at the line end
     last_margin: int | None = None
-    quote_open = prev_centred = pending_break = False
+    quote_open = prev_centred = pending_break = prev_head = False
+    head_ratio = float(L.get("heading_ratio", 0))       # lines set larger than the body text are headings: a paragraph of their own
+    head_re = re.compile(L["heading_re"]) if L.get("heading_re") else None      # or lines that start like one ("§ 11."); centred lines after it continue it
     for pg in pages:
         body, page_notes, title = split_page(pg, L)
         titles += title
@@ -159,11 +162,16 @@ def from_lines(pages: list[PageData], L: dict, edition: str, lex: Lexicon, margi
         pending_margin = sorted(pg.margin) if margin_edition else []
         inds = [(l.x0 - left) / tw for l in body]
         in_range = [qlo < x <= qhi for x in inds]
+        med_h = statistics.median(l.h for l in body)
+        hstart = [bool(head_re and head_re.match(l.text.strip())) or (bool(head_ratio) and l.h > head_ratio * med_h and len(l.text.split()) > 1) for l in body]
+        in_range = [r and not h for r, h in zip(in_range, hstart)]       # an indented heading is not a block quotation
         for i, l in enumerate(body):
             ind = inds[i]
             centred = ind > centred_frac and l.x1 < right - 0.05 * tw
+            head_start = hstart[i]
+            head = head_start or (prev_head and centred and bool(head_re))
             # a block quotation is indented over several lines; a paragraph indent affects exactly one
-            quote = not centred and in_range[i] and ((i > 0 and in_range[i - 1]) or (i + 1 < len(body) and in_range[i + 1]))
+            quote = not head and not centred and in_range[i] and ((i > 0 and in_range[i - 1]) or (i + 1 < len(body) and in_range[i + 1]))
             words = [w for w in l.text.split() if not any(rx.fullmatch(w) for rx in drop_tokens)]
             starts = False
             if cur and carry is None:
@@ -173,6 +181,10 @@ def from_lines(pages: list[PageData], L: dict, edition: str, lex: Lexicon, margi
                     starts = True
                 if quote != quote_open:
                     starts = True
+                if head != prev_head or (head and re.match(r"(§|Chapter\b|Kapitel\b)", l.text.strip())):
+                    starts = True
+                if head and prev_head and not head_start:        # second line of a heading
+                    starts = False
                 if pending_break and not (centred and prev_centred) and words and words[0].lstrip("\u00bb(\u201c\"")[:1].isupper():
                     starts = True
             if starts:
@@ -198,7 +210,7 @@ def from_lines(pages: list[PageData], L: dict, edition: str, lex: Lexicon, margi
                 cur.append(marks.BR)
             if margin_marks and carry is None:
                 cur.extend(margin_marks)
-            quote_open, prev_centred = quote, centred
+            quote_open, prev_centred, prev_head = quote, centred, head
             cur.extend(words)
             nxt_line = body[i + 1].text.split() if i + 1 < len(body) else []
             if cur and words and HYPHEN_END.search(cur[-1]) and len(cur[-1]) > 2 and not (nxt_line and nxt_line[0].lower() in suspended):

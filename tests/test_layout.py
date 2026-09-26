@@ -34,3 +34,25 @@ def test_footnotes_and_furniture_are_split_off():
     body, notes, _ = layout.split_page(PageData("45", lines), {"furniture": [r"MEMORIAL ADDRESS \d+"], "notes": {"frac": 0.7, "height_ratio": 0.85}})
     assert [l.text for l in body] == [f"Body text line {i}." for i in range(1, 7)]
     assert [l.text for l in notes] == ["1. A footnote (Tr.)"]
+
+
+def test_headings_by_size_or_pattern_are_their_own_paragraphs():
+    rows = [Line("Body line one of a paragraph that runs on.", 50, 400, 100, 10), Line("Body line two ends short.", 50, 250, 120, 10),
+            Line("§ 12 A heading set larger than the text", 50, 400, 150, 13), Line("and continued on a second line", 50, 250, 165, 13),
+            Line("Text after the heading goes on here.", 50, 400, 190, 10), Line("§ 13. Pattern heading in body size", 60, 300, 220, 10),
+            Line("Text again.", 50, 400, 240, 10)]
+    paras, _, _ = layout.from_lines([PageData("1", rows)], {"paragraphs": "indent", "heading_ratio": 1.1, "heading_re": r"^§\s*\d+\."}, "ed", layout.Lexicon())
+    assert [marks.strip(p).strip() for p in paras] == ["Body line one of a paragraph that runs on. Body line two ends short.",
+                                                       "§ 12 A heading set larger than the text and continued on a second line",
+                                                       "Text after the heading goes on here.", "§ 13. Pattern heading in body size", "Text again."]
+
+
+def test_running_heads_only_in_the_top_band():
+    lines = [Line("THEMA", 50, 300, 10, 8)] + [Line(f"Body {i}.", 50, 400, 100 + 20 * i, 12) for i in range(1, 7)] + [Line("THEMA", 50, 300, 300, 12)]
+    body, _, _ = layout.split_page(PageData("1", lines), {"running_heads": ["THEMA"]})
+    assert [l.text for l in body].count("THEMA") == 1        # the running head is dropped, a chapter title of the same words stays
+
+
+def test_note_keys_do_not_collide_in_control_sequence_names():
+    from textcollate.render import cs_name
+    assert cs_name("1") != cs_name("b") and cs_name("8") != cs_name("i")

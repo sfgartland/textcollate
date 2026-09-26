@@ -25,7 +25,7 @@ def esc(t: str) -> str:
 
 def cs_name(s: str) -> str:
     """letters-only control sequence name for an id or footnote key"""
-    return "".join(string.ascii_letters[int(c)] if c.isdigit() else (c if c.isalpha() else {"*": "star"}.get(c, "x")) for c in s)
+    return "".join("Q" + string.ascii_uppercase[int(c)] if c.isdigit() else (c if c.isalpha() else {"*": "star"}.get(c, "x")) for c in s)
 
 
 class Styles:
